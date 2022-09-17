@@ -9,6 +9,7 @@ import android.widget.ThemedSpinnerAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.text.isDigitsOnly
+import androidx.core.widget.doOnTextChanged
 import com.ex.week1_0706012110013_barnanimals.databinding.ActivityFormBinding
 import com.google.android.material.snackbar.Snackbar
 import database.GlobalVar.Companion.animalList
@@ -69,6 +70,20 @@ class formActivity : AppCompatActivity() {
             GetResult.launch(myIntent)
         }
 
+        var nameText = bind.namaHewanTextInputLayout.editText
+        nameText?.doOnTextChanged{ text, _, _, _ ->
+            if(text.isNullOrEmpty()) { bind.namaHewanTextInputLayout.error = "Can't be Empty" }
+        }
+        var typeText = bind.jenisHewanTextInputLayout.editText
+        typeText?.doOnTextChanged{ text, _, _, _ ->
+            if(text.isNullOrEmpty()) { bind.jenisHewanTextInputLayout.error = "Can't be Empty" }
+        }
+        var ageText = bind.umurHewanTextInputLayout.editText
+        ageText?.doOnTextChanged{ text, _, _, _ ->
+            if(text.isNullOrEmpty()) { bind.umurHewanTextInputLayout.error = "Can't be Empty" }
+        }
+
+
         bind.saveButton.setOnClickListener{
 
             var uri:String
@@ -76,28 +91,53 @@ class formActivity : AppCompatActivity() {
             else if(theURIPlease.isNotEmpty()) { theURIPlease }
             else { "" }
 
-            var name = bind.namaHewanTextInputLayout.editText?.text.toString().trim()
-            var type = bind.jenisHewanTextInputLayout.editText?.text.toString().trim()
-            var age = bind.umurHewanTextInputLayout.editText?.text.toString().trim().toInt()
-            var newAnimal = Animal(uri, name, type, age)
+            if(checkAnimalData()){
+                var name = bind.namaHewanTextInputLayout.editText?.text.toString().trim()
+                var type = bind.jenisHewanTextInputLayout.editText?.text.toString().trim()
+                var age = bind.umurHewanTextInputLayout.editText?.text.toString().trim().toInt()
 
-            //Save the new Data
-            var message = "Animal?"
-            if(theIndex==-1){ animalList.add(newAnimal); message = "Animal Added"}
-            else if(theIndex!=-1) {
-                animalList[theIndex] = newAnimal; message = "Data Updated"
+                var newAnimal = Animal(uri, name, type, age)
+
+                //Save the new Data
+                var message = "Animal?"
+                if(theIndex==-1){ animalList.add(newAnimal); message = "Animal Added"}
+                else if(theIndex!=-1) {
+                    animalList[theIndex] = newAnimal; message = "Data Updated"
+                }
+
+                finish()
+                Toast.makeText(this, "$message", Toast.LENGTH_SHORT).show()
             }
-
-            finish()
-            Toast.makeText(this, "$message", Toast.LENGTH_SHORT).show()
-
-//            val snacky = Snackbar.make(bind.saveButton, message, Snackbar.LENGTH_SHORT)
-//            snacky.setAction("Dismiss") { snacky.dismiss() }
-//            snacky.show()
-
 
         }
 
+    }
+
+    private fun checkAnimalData():Boolean{
+        var allClear = true
+
+//        if(newAnimal.name.isNullOrEmpty()) {
+//            allClear = false
+//            Toast.makeText(this, "Name cannot be Empty", Toast.LENGTH_SHORT).show()}
+//        if(newAnimal.type.isNullOrEmpty()) {
+//            allClear = false
+//            Toast.makeText(this, "Type cannot by Empty", Toast.LENGTH_SHORT).show()}
+//        if(newAnimal.age<=0) {
+//            allClear = false
+//            Toast.makeText(this, "Invalid Age input", Toast.LENGTH_SHORT).show()}
+
+        if(bind.namaHewanTextInputLayout.editText?.text.isNullOrEmpty()) {
+            allClear = false
+            Toast.makeText(this, "Name cannot be Empty", Toast.LENGTH_SHORT).show()}
+        if(bind.jenisHewanTextInputLayout.editText?.text.isNullOrEmpty()) {
+            allClear = false
+            Toast.makeText(this, "Type cannot by Empty", Toast.LENGTH_SHORT).show()}
+        if(bind.umurHewanTextInputLayout.editText?.text.isNullOrEmpty()) {
+            allClear = false
+            Toast.makeText(this, "Invalid Age input", Toast.LENGTH_SHORT).show()}
+
+        return allClear
 
     }
+
 }
